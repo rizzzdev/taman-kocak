@@ -1,5 +1,7 @@
 import ViewPostsPage from "@/features/post/pages/ViewPostsPage";
 
-export default function Home() {
+const Page = () => {
   return <ViewPostsPage />;
-}
+};
+
+export default Page;
