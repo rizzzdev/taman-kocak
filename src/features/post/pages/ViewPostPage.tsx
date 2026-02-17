@@ -9,12 +9,9 @@ import { useAtom } from "jotai";
 import { postStateAtom } from "@/shared/stores/post/postStore";
 import { getPostByIdApi } from "@/shared/api/post/postApi";
 import { useParams, useRouter } from "next/navigation";
-import { postCommentApi } from "@/shared/api/comment/commentApi";
-import { formStateAtom } from "@/shared/components/ui/Form";
 
 const ViewPostPage = () => {
   const [postState, setPostState] = useAtom(postStateAtom);
-  const [formState, setFormState] = useAtom(formStateAtom);
   const id = useParams().id as string;
   const router = useRouter();
 
@@ -31,21 +28,7 @@ const ViewPostPage = () => {
     router.push("/");
   };
 
-  const { isLoadingState, meSessionState } = useAuthentication(successFunc);
-
-  const handleComment = async () => {
-    const response = await postCommentApi({
-      postId: id,
-      text: formState["text"] || "",
-      userId: meSessionState!.me!.id!,
-    });
-
-    if (!response?.error) {
-      setFormState({});
-    }
-
-    return !response?.error;
-  };
+  const { isLoadingState } = useAuthentication(successFunc);
 
   if (isLoadingState) {
     return <Loading />;
@@ -56,12 +39,7 @@ const ViewPostPage = () => {
       <Navbar />
       <Wrapper width="medium">
         {postState && (
-          <PostCard
-            post={postState}
-            user={postState!.user!}
-            includeComments
-            onSubmitComment={handleComment}
-          />
+          <PostCard post={postState} user={postState!.user!} includeComments />
         )}
       </Wrapper>
     </>
