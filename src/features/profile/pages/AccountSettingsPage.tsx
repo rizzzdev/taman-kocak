@@ -11,8 +11,8 @@ import Wrapper from "@/shared/components/ui/Wrapper";
 import { useAuthentication } from "@/shared/hooks/useAuthentication";
 import { meSessionStateAtom } from "@/shared/stores/meSessionStore";
 import { useAtom, useSetAtom } from "jotai";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
 
 const AccountSettingsPage = () => {
   const [formState, setFormState] = useAtom(formStateAtom);
@@ -22,19 +22,14 @@ const AccountSettingsPage = () => {
     "account settings",
   );
 
-  const id = useSearchParams().get("id");
   const router = useRouter();
 
   const successFunc = async () => {
-    if (!id) {
+    if (!me) {
       return router.push("/");
     }
 
-    if (id !== me?.id) {
-      return router.push("/");
-    }
-
-    const response = await getUserByIdApi(id);
+    const response = await getUserByIdApi(me.id);
     if (response?.data && !response?.error) {
       setFormState({
         fullname: response.data.fullname,
@@ -59,7 +54,7 @@ const AccountSettingsPage = () => {
     formData.append("username", formState["username"]);
     formData.append("fullname", formState["fullname"]);
 
-    const patchResponse = await patchUserByIdApi(id!, formData, "");
+    const patchResponse = await patchUserByIdApi(me!.id!, formData, "");
     if (patchResponse?.data && !patchResponse?.error) {
       setMeSessionState((prev) => ({
         ...prev,
@@ -131,7 +126,7 @@ const AccountSettingsPage = () => {
     formData.append("oldPassword", formState["oldPassword"]);
     formData.append("password", formState["newPassword"]);
 
-    const patchResponse = await patchUserByIdApi(id!, formData, "");
+    const patchResponse = await patchUserByIdApi(me!.id!, formData, "");
     if (patchResponse?.data && !patchResponse?.error) {
       setToastState({
         isVisible: true,
@@ -168,7 +163,7 @@ const AccountSettingsPage = () => {
   }
 
   return (
-    <>
+    <Suspense>
       <Navbar />
       <Wrapper>
         <div className="w-full flex flex-col justify-center items-center bg-primary text-text rounded-sm p-4 gap-8">
@@ -230,7 +225,7 @@ const AccountSettingsPage = () => {
           )}
         </div>
       </Wrapper>
-    </>
+    </Suspense>
   );
 };
 
