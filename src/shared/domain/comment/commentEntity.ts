@@ -6,7 +6,7 @@ export interface CommentEntity {
   text: string;
   post?: PostEntity;
   user?: UserEntity;
-  createdAt: Date;
-  lastUpdatedAt: Date | null;
-  deletedAt: Date;
+  createdAt: Date | string;
+  lastUpdatedAt: Date | null | string;
+  deletedAt: Date | string;
 }

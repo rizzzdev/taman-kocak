@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/image/:path*",
-        destination: envConfig.imageHostingUrl + "/:path*",
+        destination: envConfig.imageHostingUrl! + "/:path*",
       },
     ];
   },

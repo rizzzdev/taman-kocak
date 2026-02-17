@@ -4,7 +4,7 @@ export const dateParser = (dateString: string) => {
   const year = dateString.split("T")[0].split("-")[0];
 
   let dayWithCardinal;
-  if (day.endsWith("1")) {
+  if (day?.endsWith("1")) {
     dayWithCardinal = day + "st";
   } else if (day.endsWith("2")) {
     dayWithCardinal = day + "nd";

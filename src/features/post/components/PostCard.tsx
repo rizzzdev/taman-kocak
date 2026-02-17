@@ -12,6 +12,7 @@ import { PostEntity } from "@/shared/domain/post/postEntity";
 import { RepostEntity } from "@/shared/domain/repost/repostEntity";
 import { UserEntity } from "@/shared/domain/user/userEntity";
 import { dateParser } from "@/shared/libs/dateParser";
+import { localDateNow } from "@/shared/libs/localDateNow";
 import { meSessionStateAtom } from "@/shared/stores/meSessionStore";
 import {
   BookmarksSimpleIcon,
@@ -198,6 +199,26 @@ const CallToAction = (props: CallToActionProps) => {
       return router.push("/login");
     }
 
+    const prevLikesState = likesState;
+
+    setLikesState({
+      likes: [
+        ...likesState.likes,
+        {
+          id: "tempId",
+          user: me!,
+          post: postState!,
+          createdAt: localDateNow(),
+          deletedAt: localDateNow(),
+          lastUpdatedAt: localDateNow(),
+        },
+      ],
+      isMeLiked: !likesState.isMeLiked,
+      likesCount: likesState.isMeLiked
+        ? likesState.likesCount - 1
+        : likesState.likesCount + 1,
+    });
+
     const likeResponse = await postLikeApi({
       postId: postState!.id!,
       userId: me!.id!,
@@ -213,20 +234,21 @@ const CallToAction = (props: CallToActionProps) => {
       setPostState(postResponse.data);
     }
 
-    if (!likeResponse?.error && likesState.isMeLiked) {
+    if (!likeResponse?.error && postResponse && !postResponse.error) {
       return setLikesState({
-        likes: (postResponse && postResponse.data?.likes) || [],
-        isMeLiked: false,
-        likesCount: likesState.likesCount - 1,
+        likes: (postResponse && postResponse.data!.likes) || [],
+        isMeLiked:
+          (postResponse &&
+            postResponse.data!.likes?.some(
+              (like) => like?.user?.id === me?.id,
+            )) ||
+          false,
+        likesCount: (postResponse && postResponse?.data?.likes?.length) || 0,
       });
     }
 
-    if (!likeResponse?.error && !likesState.isMeLiked) {
-      return setLikesState({
-        likes: (postResponse && postResponse.data?.likes) || [],
-        isMeLiked: true,
-        likesCount: likesState.likesCount + 1,
-      });
+    if (likeResponse?.error && postResponse && postResponse.error) {
+      return setLikesState(prevLikesState);
     }
   };
 
@@ -234,6 +256,26 @@ const CallToAction = (props: CallToActionProps) => {
     if (!me) {
       return router.push("/login");
     }
+
+    const prevRepostsState = repostsState;
+
+    setRepostsState({
+      reposts: [
+        ...repostsState.reposts,
+        {
+          id: "tempId",
+          user: me!,
+          post: postState!,
+          createdAt: localDateNow(),
+          deletedAt: localDateNow(),
+          lastUpdatedAt: localDateNow(),
+        },
+      ],
+      isMeReposted: !repostsState.isMeReposted,
+      repostsCount: repostsState.isMeReposted
+        ? repostsState.repostsCount - 1
+        : repostsState.repostsCount + 1,
+    });
 
     const repostResponse = await postRepostApi({
       postId: postState!.id!,
@@ -250,20 +292,22 @@ const CallToAction = (props: CallToActionProps) => {
       setPostState(postResponse.data);
     }
 
-    if (!repostResponse?.error && repostsState.isMeReposted) {
+    if (!repostResponse?.error && postResponse && !postResponse.error) {
       return setRepostsState({
-        reposts: (postResponse && postResponse.data?.reposts) || [],
-        isMeReposted: false,
-        repostsCount: repostsState.repostsCount - 1,
+        reposts: (postResponse && postResponse.data!.reposts) || [],
+        isMeReposted:
+          (postResponse &&
+            postResponse.data!.reposts?.some(
+              (repost) => repost?.user?.id === me?.id,
+            )) ||
+          false,
+        repostsCount:
+          (postResponse && postResponse?.data?.reposts?.length) || 0,
       });
     }
 
-    if (!repostResponse?.error && !repostsState.isMeReposted) {
-      return setRepostsState({
-        reposts: (postResponse && postResponse.data?.reposts) || [],
-        isMeReposted: true,
-        repostsCount: repostsState.repostsCount + 1,
-      });
+    if (repostResponse?.error && postResponse && postResponse.error) {
+      return setRepostsState(prevRepostsState);
     }
   };
 
@@ -271,6 +315,26 @@ const CallToAction = (props: CallToActionProps) => {
     if (!me) {
       return router.push("/login");
     }
+
+    const prevBookmarksState = bookmarksState;
+
+    setBookmarksState({
+      bookmarks: [
+        ...bookmarksState.bookmarks,
+        {
+          id: "tempId",
+          user: me!,
+          post: postState!,
+          createdAt: localDateNow(),
+          deletedAt: localDateNow(),
+          lastUpdatedAt: localDateNow(),
+        },
+      ],
+      isMeBookmarked: !bookmarksState.isMeBookmarked,
+      bookmarksCount: bookmarksState.isMeBookmarked
+        ? bookmarksState.bookmarksCount - 1
+        : bookmarksState.bookmarksCount + 1,
+    });
 
     const bookmarkResponse = await postBookmarkApi({
       postId: postState!.id!,
@@ -287,20 +351,22 @@ const CallToAction = (props: CallToActionProps) => {
       setPostState(postResponse.data);
     }
 
-    if (!bookmarkResponse?.error && bookmarksState.isMeBookmarked) {
+    if (!bookmarkResponse?.error && postResponse && !postResponse.error) {
       return setBookmarksState({
-        bookmarks: (postResponse && postResponse.data?.bookmarks) || [],
-        isMeBookmarked: false,
-        bookmarksCount: bookmarksState.bookmarksCount - 1,
+        bookmarks: (postResponse && postResponse.data!.bookmarks) || [],
+        isMeBookmarked:
+          (postResponse &&
+            postResponse.data!.bookmarks?.some(
+              (bookmark) => bookmark?.user?.id === me?.id,
+            )) ||
+          false,
+        bookmarksCount:
+          (postResponse && postResponse?.data?.bookmarks?.length) || 0,
       });
     }
 
-    if (!bookmarkResponse?.error && !bookmarksState.isMeBookmarked) {
-      return setBookmarksState({
-        bookmarks: (postResponse && postResponse.data?.bookmarks) || [],
-        isMeBookmarked: true,
-        bookmarksCount: bookmarksState.bookmarksCount + 1,
-      });
+    if (bookmarkResponse?.error && postResponse && postResponse.error) {
+      return setBookmarksState(prevBookmarksState);
     }
   };
 
@@ -370,15 +436,33 @@ const PostCard = (props: PostCardProps) => {
       return router.push(`/login`);
     }
 
+    const prevCommentsState = commentsState;
+    const prevFormState = formState;
+
+    setCommentsState({
+      comments: [
+        ...commentsState.comments,
+        {
+          id: "tempId",
+          text: formState["text"] || "",
+          createdAt: localDateNow().toISOString(),
+          deletedAt: localDateNow().toISOString(),
+          lastUpdatedAt: localDateNow().toISOString(),
+          post: post,
+          user: me,
+        },
+      ],
+      isMeCommented: true,
+      commentsCount: commentsState.commentsCount + 1,
+    });
+
+    setFormState({});
+
     const response = await postCommentApi({
       postId: post.id,
       text: formState["text"] || "",
       userId: me!.id!,
     });
-
-    if (!response?.error && response?.data) {
-      setFormState({});
-    }
 
     const postResponse =
       !response?.error &&
@@ -386,13 +470,30 @@ const PostCard = (props: PostCardProps) => {
         post.id!,
         "includeUser=1&includeReposts=1&includeBookmarks=1&includeComments=1&includeLikes=1",
       ));
+
+    console.log({
+      typeof: postResponse && typeof postResponse.data?.createdAt,
+      localNow: localDateNow().toISOString(),
+      now: new Date().toISOString(),
+    });
+
     if (postResponse && !postResponse.error) {
-      // setPostState(postResponse.data);
-      setCommentsState({
+      return setCommentsState({
         comments: (postResponse && postResponse.data?.comments) || [],
-        isMeCommented: true,
-        commentsCount: commentsState.commentsCount + 1,
+        isMeCommented:
+          (postResponse &&
+            postResponse.data?.comments?.some(
+              (comment) => comment?.user?.id === me?.id,
+            )) ||
+          false,
+        commentsCount:
+          (postResponse && postResponse?.data?.comments?.length) || 0,
       });
+    }
+
+    if (postResponse && postResponse.error) {
+      setFormState(prevFormState);
+      return setCommentsState(prevCommentsState);
     }
   };
 

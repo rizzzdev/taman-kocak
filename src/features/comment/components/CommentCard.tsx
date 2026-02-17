@@ -37,9 +37,15 @@ const Comments = (props: CommentsProps) => {
       </h3>
       <div className="w-full flex flex-col justify-center items-center gap-1">
         {comments.length > 0 &&
-          comments.map((comment) => {
-            return <CommentList key={comment.id} comment={comment} />;
-          })}
+          comments
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime(),
+            )
+            .map((comment) => {
+              return <CommentList key={comment.id} comment={comment} />;
+            })}
         {comments.length === 0 && (
           <p className="w-full text-sm text-center mt-2">
             No Comment Found at this post!

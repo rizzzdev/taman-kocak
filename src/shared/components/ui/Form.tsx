@@ -203,7 +203,7 @@ const Toast = () => {
         <h3 className="w-full text-md font-semibold">
           {toastState.type === "error" ? "Error" : "Success"}
         </h3>
-        {toastState.messages.map((message, index) => (
+        {toastState?.messages?.map((message, index) => (
           <div
             className="w-full flex justify-center items-start gap-2"
             key={index}

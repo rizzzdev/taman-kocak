@@ -59,11 +59,11 @@ const AccountSettingsPage = () => {
     formData.append("username", formState["username"]);
     formData.append("fullname", formState["fullname"]);
 
-    const postResponse = await patchUserByIdApi(id!, formData, "");
-    if (postResponse?.data && !postResponse?.error) {
+    const patchResponse = await patchUserByIdApi(id!, formData, "");
+    if (patchResponse?.data && !patchResponse?.error) {
       setMeSessionState((prev) => ({
         ...prev,
-        me: postResponse!.data!,
+        me: patchResponse!.data!,
       }));
 
       setToastState({
@@ -77,13 +77,13 @@ const AccountSettingsPage = () => {
       }, 5000);
     }
 
-    if (postResponse?.error) {
-      const messages = postResponse.message as string;
+    if (patchResponse?.error) {
+      const messages = patchResponse?.message as string;
 
       setToastState({
         isVisible: true,
         type: "error",
-        messages: messages.split("\n\n"),
+        messages: messages?.split("\n\n"),
       });
 
       setTimeout(() => {
@@ -131,8 +131,8 @@ const AccountSettingsPage = () => {
     formData.append("oldPassword", formState["oldPassword"]);
     formData.append("password", formState["newPassword"]);
 
-    const postResponse = await patchUserByIdApi(id!, formData, "");
-    if (postResponse?.data && !postResponse?.error) {
+    const patchResponse = await patchUserByIdApi(id!, formData, "");
+    if (patchResponse?.data && !patchResponse?.error) {
       setToastState({
         isVisible: true,
         type: "success",
@@ -146,8 +146,8 @@ const AccountSettingsPage = () => {
       return;
     }
 
-    if (postResponse?.error) {
-      const messages = postResponse.message as string;
+    if (patchResponse?.error) {
+      const messages = patchResponse.message as string;
 
       setToastState({
         isVisible: true,
