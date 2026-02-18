@@ -503,7 +503,15 @@ const PostCard = (props: PostCardProps) => {
 
       <Timestamp date={String(post.createdAt)} />
 
-      <p className="w-full text-lg text-text">{post.caption}</p>
+      <div className={`w-full flex flex-col justify-center items-center gap-2`}>
+        {post.caption.split("\n").map((line, index) => {
+          return (
+            <p className="w-full text-lg text-text" key={index}>
+              {line}
+            </p>
+          );
+        })}
+      </div>
       {post.imageUrl && <PostImage src={post.imageUrl} />}
       {/* <PostImage src={"/image/1771351862596.png"} /> */}
       <CallToAction post={post} commentsState={commentsState} />
